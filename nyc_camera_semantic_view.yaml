@@ -1,0 +1,242 @@
+name: nyc_camera_semantic_view
+description: >
+  Semantic view for NYC traffic camera data streamed via Snowpipe Streaming High Speed v2.
+  Provides natural language access to camera locations, roadway information, and temporal analysis.
+owner: tspann
+version: "1.0"
+
+tables:
+  - name: NYC_CAMERA_DATA
+    description: >
+      NYC traffic camera metadata from 511NY API, 
+      streamed in real-time via Snowpipe Streaming v2 REST API.
+    base_table:
+      database: DEMO
+      schema: DEMO
+      table: NYC_CAMERA_DATA
+    
+    dimensions:
+      - name: uuid
+        description: Unique identifier for each camera capture record
+        expr: uuid
+        data_type: VARCHAR
+        unique: true
+      
+      - name: camera_id
+        description: Unique identifier for the camera from 511NY
+        expr: camera_id
+        data_type: VARCHAR
+        sample_values:
+          - "1234"
+          - "5678"
+      
+      - name: camera_name
+        description: Human-readable name of the camera, usually includes location
+        expr: name
+        data_type: VARCHAR
+        synonyms:
+          - name
+          - location
+          - camera location
+      
+      - name: roadway_name
+        description: Name of the roadway where camera is located (e.g., I-495, BQE)
+        expr: roadway_name
+        data_type: VARCHAR
+        synonyms:
+          - roadway
+          - highway
+          - road
+          - route
+          - expressway
+        sample_values:
+          - "I-495"
+          - "I-278"
+          - "BQE"
+          - "LIE"
+      
+      - name: direction_of_travel
+        description: Direction the camera faces (Northbound, Southbound, Eastbound, Westbound)
+        expr: direction_of_travel
+        data_type: VARCHAR
+        synonyms:
+          - direction
+          - facing
+          - travel direction
+        sample_values:
+          - "Northbound"
+          - "Southbound"
+          - "Eastbound"
+          - "Westbound"
+      
+      - name: latitude
+        description: Latitude coordinate of camera location
+        expr: latitude
+        data_type: FLOAT
+      
+      - name: longitude
+        description: Longitude coordinate of camera location
+        expr: longitude
+        data_type: FLOAT
+      
+      - name: video_url
+        description: URL to the live video stream
+        expr: video_url
+        data_type: VARCHAR
+      
+      - name: image_url
+        description: URL to the camera snapshot image
+        expr: image_url
+        data_type: VARCHAR
+      
+      - name: is_disabled
+        description: Whether the camera is currently disabled
+        expr: disabled
+        data_type: BOOLEAN
+      
+      - name: is_blocked
+        description: Whether the camera view is blocked
+        expr: blocked
+        data_type: BOOLEAN
+      
+      - name: hostname
+        description: Hostname of the ingestion server
+        expr: hostname
+        data_type: VARCHAR
+      
+      - name: ip_address
+        description: IP address of the ingestion server
+        expr: ip_address
+        data_type: VARCHAR
+
+    time_dimensions:
+      - name: image_timestamp
+        description: Timestamp when the camera image was captured
+        expr: image_timestamp
+        data_type: TIMESTAMP_NTZ
+        synonyms:
+          - capture time
+          - captured
+          - when captured
+          - snapshot time
+      
+      - name: ingest_timestamp
+        description: Timestamp when the record was ingested into Snowflake
+        expr: ingest_timestamp
+        data_type: TIMESTAMP_NTZ
+        synonyms:
+          - ingested
+          - loaded
+          - when loaded
+
+    measures:
+      - name: total_records
+        description: Total number of camera capture records
+        expr: COUNT(*)
+        data_type: NUMBER
+        default_aggregation: sum
+        synonyms:
+          - record count
+          - captures
+          - total captures
+      
+      - name: unique_cameras
+        description: Number of unique cameras
+        expr: COUNT(DISTINCT camera_id)
+        data_type: NUMBER
+        default_aggregation: sum
+        synonyms:
+          - camera count
+          - number of cameras
+          - distinct cameras
+      
+      - name: unique_roadways
+        description: Number of unique roadways
+        expr: COUNT(DISTINCT roadway_name)
+        data_type: NUMBER
+        default_aggregation: sum
+        synonyms:
+          - roadway count
+          - number of roadways
+      
+      - name: avg_latitude
+        description: Average latitude of cameras
+        expr: AVG(latitude)
+        data_type: FLOAT
+        default_aggregation: avg
+      
+      - name: avg_longitude
+        description: Average longitude of cameras
+        expr: AVG(longitude)
+        data_type: FLOAT
+        default_aggregation: avg
+
+verified_queries:
+  - name: total_cameras
+    question: How many cameras are there?
+    verified_sql: |
+      SELECT COUNT(DISTINCT camera_id) as camera_count
+      FROM DEMO.DEMO.NYC_CAMERA_DATA
+    verified_at: 2025-02-04
+    verified_by: tspann
+  
+  - name: cameras_by_roadway
+    question: How many cameras are on each roadway?
+    verified_sql: |
+      SELECT roadway_name, COUNT(DISTINCT camera_id) as camera_count
+      FROM DEMO.DEMO.NYC_CAMERA_DATA
+      WHERE roadway_name IS NOT NULL
+      GROUP BY roadway_name
+      ORDER BY camera_count DESC
+    verified_at: 2025-02-04
+    verified_by: tspann
+  
+  - name: recent_captures
+    question: What are the most recent camera captures?
+    verified_sql: |
+      SELECT camera_id, name, roadway_name, image_timestamp
+      FROM DEMO.DEMO.NYC_CAMERA_DATA
+      ORDER BY image_timestamp DESC
+      LIMIT 20
+    verified_at: 2025-02-04
+    verified_by: tspann
+  
+  - name: cameras_by_direction
+    question: How many cameras face each direction?
+    verified_sql: |
+      SELECT direction_of_travel, COUNT(DISTINCT camera_id) as camera_count
+      FROM DEMO.DEMO.NYC_CAMERA_DATA
+      WHERE direction_of_travel IS NOT NULL
+      GROUP BY direction_of_travel
+      ORDER BY camera_count DESC
+    verified_at: 2025-02-04
+    verified_by: tspann
+  
+  - name: i495_cameras
+    question: What cameras are on I-495?
+    verified_sql: |
+      SELECT DISTINCT camera_id, name, direction_of_travel, latitude, longitude
+      FROM DEMO.DEMO.NYC_CAMERA_DATA
+      WHERE roadway_name LIKE '%I-495%' OR roadway_name LIKE '%495%'
+    verified_at: 2025-02-04
+    verified_by: tspann
+  
+  - name: hourly_captures
+    question: How many captures per hour today?
+    verified_sql: |
+      SELECT DATE_TRUNC('hour', image_timestamp) as hour, COUNT(*) as captures
+      FROM DEMO.DEMO.NYC_CAMERA_DATA
+      WHERE DATE(image_timestamp) = CURRENT_DATE()
+      GROUP BY hour
+      ORDER BY hour
+    verified_at: 2025-02-04
+    verified_by: tspann
+  
+  - name: active_cameras_last_hour
+    question: How many cameras were active in the last hour?
+    verified_sql: |
+      SELECT COUNT(DISTINCT camera_id) as active_cameras
+      FROM DEMO.DEMO.NYC_CAMERA_DATA
+      WHERE image_timestamp >= DATEADD('hour', -1, CURRENT_TIMESTAMP())
+    verified_at: 2025-02-04
+    verified_by: tspann

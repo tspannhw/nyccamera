@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a1a3a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a1a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="neonBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0080ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="neonOrange" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff6600;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff0066;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="neonPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9900ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowStrong">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="url(#bgGrad)"/>
+  
+  <!-- Rain effect -->
+  <g opacity="0.3">
+    <line x1="50" y1="0" x2="45" y2="80" stroke="#4488ff" stroke-width="1"/>
+    <line x1="150" y1="20" x2="145" y2="100" stroke="#4488ff" stroke-width="1"/>
+    <line x1="300" y1="10" x2="295" y2="90" stroke="#4488ff" stroke-width="1"/>
+    <line x1="450" y1="30" x2="445" y2="110" stroke="#4488ff" stroke-width="1"/>
+    <line x1="600" y1="5" x2="595" y2="85" stroke="#4488ff" stroke-width="1"/>
+    <line x1="750" y1="25" x2="745" y2="105" stroke="#4488ff" stroke-width="1"/>
+    <line x1="900" y1="15" x2="895" y2="95" stroke="#4488ff" stroke-width="1"/>
+    <line x1="1050" y1="35" x2="1045" y2="115" stroke="#4488ff" stroke-width="1"/>
+    <line x1="1150" y1="8" x2="1145" y2="88" stroke="#4488ff" stroke-width="1"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="50" font-family="Arial Black, sans-serif" font-size="28" fill="#00ffff" text-anchor="middle" filter="url(#glowStrong)">NYC CAMERA SURVEILLANCE NETWORK</text>
+  <text x="600" y="80" font-family="Arial, sans-serif" font-size="14" fill="#ff6600" text-anchor="middle" filter="url(#glow)">◈ TYRELL CORP DATA SYSTEMS ◈</text>
+  
+  <!-- Japanese decoration -->
+  <text x="50" y="100" font-family="Arial, sans-serif" font-size="18" fill="#ff00ff" opacity="0.6">データ</text>
+  <text x="1100" y="100" font-family="Arial, sans-serif" font-size="18" fill="#ff00ff" opacity="0.6">監視</text>
+  
+  <!-- 511NY API Box -->
+  <g transform="translate(80, 180)">
+    <rect x="0" y="0" width="180" height="120" fill="#1a1a2e" stroke="#ff0066" stroke-width="2" filter="url(#glow)"/>
+    <circle cx="90" cy="35" r="20" fill="none" stroke="#ff0000" stroke-width="3" filter="url(#glowStrong)"/>
+    <circle cx="90" cy="35" r="8" fill="#ff0000" filter="url(#glowStrong)"/>
+    <text x="90" y="75" font-family="Arial Black, sans-serif" font-size="14" fill="#00ffff" text-anchor="middle" filter="url(#glow)">511NY API</text>
+    <text x="90" y="95" font-family="Arial, sans-serif" font-size="10" fill="#ff6600" text-anchor="middle">2000+ CAMERAS</text>
+    <text x="90" y="110" font-family="Arial, sans-serif" font-size="8" fill="#888888" text-anchor="middle">[LIVE FEED ACTIVE]</text>
+  </g>
+  
+  <!-- Python Client Box -->
+  <g transform="translate(420, 150)">
+    <rect x="0" y="0" width="220" height="180" fill="#1a1a2e" stroke="#00ff00" stroke-width="2" filter="url(#glow)"/>
+    <text x="110" y="30" font-family="Arial Black, sans-serif" font-size="16" fill="#00ff00" text-anchor="middle" filter="url(#glow)">PYTHON ENGINE</text>
+    
+    <!-- Sub modules -->
+    <rect x="15" y="45" width="90" height="35" fill="#0a0a1a" stroke="#00ffff" stroke-width="1"/>
+    <text x="60" y="67" font-family="Arial, sans-serif" font-size="9" fill="#00ffff" text-anchor="middle">JWT AUTH</text>
+    
+    <rect x="115" y="45" width="90" height="35" fill="#0a0a1a" stroke="#00ffff" stroke-width="1"/>
+    <text x="160" y="67" font-family="Arial, sans-serif" font-size="9" fill="#00ffff" text-anchor="middle">REST CLIENT</text>
+    
+    <rect x="15" y="90" width="90" height="35" fill="#0a0a1a" stroke="#00ffff" stroke-width="1"/>
+    <text x="60" y="112" font-family="Arial, sans-serif" font-size="9" fill="#00ffff" text-anchor="middle">SENSOR</text>
+    
+    <rect x="115" y="90" width="90" height="35" fill="#0a0a1a" stroke="#00ffff" stroke-width="1"/>
+    <text x="160" y="112" font-family="Arial, sans-serif" font-size="9" fill="#00ffff" text-anchor="middle">STREAMING</text>
+    
+    <text x="110" y="150" font-family="Courier, monospace" font-size="8" fill="#00ff00" text-anchor="middle">{'status': 'ACTIVE'}</text>
+    <text x="110" y="165" font-family="Arial, sans-serif" font-size="8" fill="#888888" text-anchor="middle">SNOWPIPE v2 REST API</text>
+  </g>
+  
+  <!-- Snowflake Box -->
+  <g transform="translate(800, 130)">
+    <rect x="0" y="0" width="220" height="220" fill="#1a1a2e" stroke="#00ffff" stroke-width="3" filter="url(#glowStrong)"/>
+    
+    <!-- Snowflake icon -->
+    <g transform="translate(110, 50)">
+      <line x1="0" y1="-25" x2="0" y2="25" stroke="#00ffff" stroke-width="3" filter="url(#glow)"/>
+      <line x1="-22" y1="-12" x2="22" y2="12" stroke="#00ffff" stroke-width="3" filter="url(#glow)"/>
+      <line x1="-22" y1="12" x2="22" y2="-12" stroke="#00ffff" stroke-width="3" filter="url(#glow)"/>
+      <circle cx="0" cy="0" r="8" fill="#00ffff" filter="url(#glowStrong)"/>
+    </g>
+    
+    <text x="110" y="95" font-family="Arial Black, sans-serif" font-size="18" fill="#00ffff" text-anchor="middle" filter="url(#glowStrong)">SNOWFLAKE</text>
+    
+    <!-- Tables -->
+    <rect x="15" y="110" width="90" height="40" fill="#0a0a1a" stroke="#0080ff" stroke-width="1"/>
+    <text x="60" y="127" font-family="Arial, sans-serif" font-size="9" fill="#0080ff" text-anchor="middle">STANDARD</text>
+    <text x="60" y="140" font-family="Arial, sans-serif" font-size="8" fill="#666666" text-anchor="middle">TABLE</text>
+    
+    <rect x="115" y="110" width="90" height="40" fill="#0a0a1a" stroke="#00ffff" stroke-width="1"/>
+    <text x="160" y="127" font-family="Arial, sans-serif" font-size="9" fill="#00ffff" text-anchor="middle">ICEBERG</text>
+    <text x="160" y="140" font-family="Arial, sans-serif" font-size="8" fill="#666666" text-anchor="middle">TABLE</text>
+    
+    <rect x="15" y="160" width="190" height="40" fill="#0a0a1a" stroke="#9900ff" stroke-width="1"/>
+    <text x="110" y="180" font-family="Arial, sans-serif" font-size="10" fill="#9900ff" text-anchor="middle">🤖 CORTEX AI ANALYSIS</text>
+    <text x="110" y="193" font-family="Arial, sans-serif" font-size="8" fill="#666666" text-anchor="middle">claude-3-5-sonnet</text>
+  </g>
+  
+  <!-- PostgreSQL Box -->
+  <g transform="translate(320, 450)">
+    <rect x="0" y="0" width="160" height="100" fill="#1a1a2e" stroke="#ff6600" stroke-width="2" filter="url(#glow)"/>
+    <!-- Database cylinder -->
+    <ellipse cx="80" cy="30" rx="35" ry="12" fill="#1a1a2e" stroke="#ff6600" stroke-width="2"/>
+    <rect x="45" y="30" width="70" height="30" fill="#1a1a2e" stroke="none"/>
+    <line x1="45" y1="30" x2="45" y2="60" stroke="#ff6600" stroke-width="2"/>
+    <line x1="115" y1="30" x2="115" y2="60" stroke="#ff6600" stroke-width="2"/>
+    <ellipse cx="80" cy="60" rx="35" ry="12" fill="#1a1a2e" stroke="#ff6600" stroke-width="2"/>
+    <text x="80" y="85" font-family="Arial Black, sans-serif" font-size="12" fill="#ff6600" text-anchor="middle" filter="url(#glow)">POSTGRESQL</text>
+  </g>
+  
+  <!-- Slack Box -->
+  <g transform="translate(560, 450)">
+    <rect x="0" y="0" width="160" height="100" fill="#1a1a2e" stroke="#ff00ff" stroke-width="2" filter="url(#glow)"/>
+    <!-- Chat bubble -->
+    <rect x="50" y="20" width="60" height="35" rx="8" fill="none" stroke="#ff00ff" stroke-width="2" filter="url(#glow)"/>
+    <polygon points="65,55 75,55 60,70" fill="none" stroke="#ff00ff" stroke-width="2"/>
+    <text x="80" y="85" font-family="Arial Black, sans-serif" font-size="12" fill="#ff00ff" text-anchor="middle" filter="url(#glow)">SLACK</text>
+  </g>
+  
+  <!-- Streamlit Box -->
+  <g transform="translate(800, 450)">
+    <rect x="0" y="0" width="160" height="100" fill="#1a1a2e" stroke="#ff0066" stroke-width="2" filter="url(#glow)"/>
+    <!-- Chart icon -->
+    <rect x="45" y="45" width="15" height="25" fill="#ff0066" filter="url(#glow)"/>
+    <rect x="65" y="35" width="15" height="35" fill="#ff0066" filter="url(#glow)"/>
+    <rect x="85" y="25" width="15" height="45" fill="#ff0066" filter="url(#glow)"/>
+    <text x="80" y="85" font-family="Arial Black, sans-serif" font-size="12" fill="#ff0066" text-anchor="middle" filter="url(#glow)">STREAMLIT</text>
+  </g>
+  
+  <!-- Connection Lines -->
+  <!-- API to Python -->
+  <line x1="260" y1="240" x2="420" y2="240" stroke="url(#neonOrange)" stroke-width="3" filter="url(#glow)"/>
+  <polygon points="415,235 425,240 415,245" fill="#ff6600"/>
+  
+  <!-- Python to Snowflake -->
+  <line x1="640" y1="240" x2="800" y2="240" stroke="url(#neonBlue)" stroke-width="3" filter="url(#glow)"/>
+  <polygon points="795,235 805,240 795,245" fill="#00ffff"/>
+  
+  <!-- Python to PostgreSQL -->
+  <line x1="530" y1="330" x2="400" y2="450" stroke="url(#neonOrange)" stroke-width="2" filter="url(#glow)"/>
+  <polygon points="405,445 395,455 400,443" fill="#ff6600"/>
+  
+  <!-- Python to Slack -->
+  <line x1="530" y1="330" x2="640" y2="450" stroke="url(#neonPurple)" stroke-width="2" filter="url(#glow)"/>
+  <polygon points="635,445 645,455 638,443" fill="#ff00ff"/>
+  
+  <!-- Snowflake to Streamlit -->
+  <line x1="910" y1="350" x2="880" y2="450" stroke="url(#neonOrange)" stroke-width="2" filter="url(#glow)"/>
+  <polygon points="875,445 885,455 878,443" fill="#ff0066"/>
+  
+  <!-- Data flow labels -->
+  <text x="340" y="225" font-family="Arial, sans-serif" font-size="10" fill="#ff6600" filter="url(#glow)">HTTP GET</text>
+  <text x="720" y="225" font-family="Arial, sans-serif" font-size="10" fill="#00ffff" filter="url(#glow)">REST API</text>
+  
+  <!-- Status indicators -->
+  <g transform="translate(50, 600)">
+    <circle cx="10" cy="10" r="6" fill="#00ff00" filter="url(#glowStrong)"/>
+    <text x="25" y="15" font-family="Arial, sans-serif" font-size="12" fill="#00ff00">SYSTEM ONLINE</text>
+  </g>
+  
+  <g transform="translate(200, 600)">
+    <circle cx="10" cy="10" r="6" fill="#00ffff" filter="url(#glowStrong)"/>
+    <text x="25" y="15" font-family="Arial, sans-serif" font-size="12" fill="#00ffff">STREAMING ACTIVE</text>
+  </g>
+  
+  <g transform="translate(400, 600)">
+    <circle cx="10" cy="10" r="6" fill="#ff6600" filter="url(#glowStrong)"/>
+    <text x="25" y="15" font-family="Arial, sans-serif" font-size="12" fill="#ff6600">10 GB/s CAPABLE</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="600" y="700" font-family="Arial, sans-serif" font-size="12" fill="#666666" text-anchor="middle">SNOWPIPE STREAMING HIGH SPEED v2 | ICEBERG | CORTEX AI</text>
+  <text x="600" y="720" font-family="Arial, sans-serif" font-size="10" fill="#444444" text-anchor="middle">◈ REPLICANT APPROVED ◈</text>
+  
+  <!-- Version -->
+  <text x="1150" y="780" font-family="Courier, monospace" font-size="10" fill="#333333">v2.0.49</text>
+</svg>

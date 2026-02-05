@@ -1,0 +1,11 @@
+{
+    "account": "YOUR_ACCOUNT_IDENTIFIER",
+    "user": "YOUR_USERNAME",
+    "database": "DEMO",
+    "schema": "DEMO",
+    "warehouse": "INGEST",
+    "role": "ACCOUNTADMIN",
+    "private_key_path": "/path/to/your/rsa_key.p8",
+    "password": null,
+    "authenticator": null
+}

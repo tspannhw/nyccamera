@@ -1,0 +1,122 @@
+[project]
+name = "nyc-traffic-intelligence"
+version = "0.1.0"
+description = "NYC Traffic Intelligence Platform with Snowflake Snowpipe Streaming, Cortex AI, and Geospatial Analytics"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Tim Spann", email = "tspann@snowflake.com" }
+]
+keywords = [
+    "snowflake",
+    "streaming",
+    "traffic",
+    "nyc",
+    "cortex",
+    "ai",
+    "geospatial",
+    "real-time"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+
+dependencies = [
+    "requests>=2.28.0",
+    "pillow>=9.0.0",
+    "psycopg2-binary>=2.9.0",
+    "slack-sdk>=3.20.0",
+    "python-dotenv>=1.0.0",
+    "cryptography>=41.0.0",
+    "pyjwt>=2.8.0",
+    "snowflake-connector-python>=3.0.0",
+    "snowflake-ml-python>=1.5.0",
+    "streamlit>=1.28.0",
+    "pandas>=2.0.0",
+    "pydeck>=0.8.0",
+    "plotly>=5.18.0",
+    "folium>=0.15.0",
+    "h3>=3.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+    "ipywidgets>=8.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+]
+pdf = [
+    "reportlab>=4.0.0",
+    "pypdf>=3.0.0",
+]
+
+[project.scripts]
+nyc-camera = "nyc_camera_main:main"
+nyc-events = "nyc_traffic_events_sensor:main"
+nyc-dashboard = "traffic_dashboard:main"
+
+[project.urls]
+Homepage = "https://github.com/tspannhw/nyc-traffic-intelligence"
+Documentation = "https://github.com/tspannhw/nyc-traffic-intelligence#readme"
+Repository = "https://github.com/tspannhw/nyc-traffic-intelligence"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # function calls in argument defaults
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["nyc_traffic_intelligence"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=. --cov-report=term-missing"
