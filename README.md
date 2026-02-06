@@ -621,6 +621,7 @@ The `nyc_environmental_analysis.ipynb` notebook correlates:
 - [Snowpipe Streaming High-Performance Overview](https://docs.snowflake.com/en/user-guide/snowpipe-streaming/snowpipe-streaming-high-performance-overview)
 - [SQL Semantic Views](https://docs.snowflake.com/en/user-guide/views-semantic/sql)
 - [Cortex Analyst](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
+- [Snowflake Postgresql](https://www.snowflake.com/en/product/features/postgres/)
 
 ### Data Sources
 - [511NY Traffic API](https://511ny.org/)
@@ -713,4 +714,4 @@ https://github.com/tspannhw/nyccamera/blob/main/run.md
 
 **Built with ❄️ Snowflake + 🐍 Python + 🤖 Cortex AI + ⚡ uv + 🌃 Blade Runner Aesthetic**
 
-*Tyrell Corporation Data Systems - More Human Than Human*
+*TimSpann Corporation Data Systems - More Human Than Human*
