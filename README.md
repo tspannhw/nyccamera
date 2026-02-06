@@ -40,9 +40,9 @@ Stream NYC traffic camera data to Snowflake via **Snowpipe Streaming High Speed 
 ║    ┌─────────────────────────────────────────────────────────────────────────────┐   ║
 ║    │                        ◈ DATA ACQUISITION LAYER ◈                           │   ║
 ║    │  ╭─────────────╮  ╭─────────────╮  ╭─────────────╮  ╭─────────────╮         │   ║
-║    │  │ ◉ 511NY API │  │ 🌤️ NOAA    │  │ 🌬️ EPA     │  │ 📡 SENSORS  │           │   ║
-║    │  │   CAMERAS   │  │  WEATHER   │  │  AIR QUAL  │  │   IoT DATA  │           │   ║
-║    │  │  [LIVE FEED]│  │ [STATIONS] │  │   [AQI]    │  │  [STREAMS]  │           │   ║
+║    │  │ ◉ 511NY API │  │ 🌤️ NOAA     │  │ 🌬️ EPA      │  │ 📡 SENSORS  │         │   ║
+║    │  │   CAMERAS   │  │  WEATHER    │  │  AIR QUAL   │  │   IoT DATA  │         │   ║
+║    │  │  [LIVE FEED]│  │ [STATIONS]  │  │   [AQI]     │  │  [STREAMS]  │         │   ║
 ║    │  ╰─────────────╯  ╰─────────────╯  ╰─────────────╯  ╰─────────────╯         │   ║
 ║    └─────────────────────────────────────────────────────────────────────────────┘   ║
 ║                                        ║                                             ║
