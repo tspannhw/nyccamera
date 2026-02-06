@@ -33,6 +33,7 @@ FROM DEMO.DEMO.TRANSIT_ALERTS
 WHERE description IS NOT NULL;
 
 -- View: AI-Powered Weather Impact Assessment
+-- Note: PROMPT() requires constant first argument, so we concatenate all data into a single text field
 CREATE OR REPLACE VIEW DEMO.DEMO.WEATHER_AI_ANALYSIS AS
 SELECT 
     station_id,
@@ -43,19 +44,24 @@ SELECT
     visibility_mi,
     AI_COMPLETE(
         'claude-sonnet-4-5',
-        PROMPT('Based on these weather conditions, assess the impact on NYC traffic:
-Weather: {0}
-Temperature: ' || temp_f || 'F
-Wind: ' || wind_mph || ' mph
-Visibility: ' || visibility_mi || ' miles
-
-Provide: 1) Traffic impact level 2) Safety recommendations 3) Areas most affected. Keep concise.', weather)
+        CONCAT(
+            'Based on these weather conditions, assess the impact on NYC traffic: Weather: ',
+            COALESCE(weather, 'Unknown'),
+            ' Temperature: ',
+            COALESCE(CAST(temp_f AS VARCHAR), 'N/A'),
+            'F Wind: ',
+            COALESCE(CAST(wind_mph AS VARCHAR), 'N/A'),
+            ' mph Visibility: ',
+            COALESCE(CAST(visibility_mi AS VARCHAR), 'N/A'),
+            ' miles. Provide: 1) Traffic impact level 2) Safety recommendations 3) Areas most affected. Keep concise.'
+        )
     ) AS traffic_impact_analysis,
     observation_time
 FROM DEMO.DEMO.NOAAWEATHER
 WHERE weather IS NOT NULL;
 
 -- View: AI-Powered Air Quality Advisory
+-- Note: PROMPT() requires constant first argument, so we use CONCAT instead
 CREATE OR REPLACE VIEW DEMO.DEMO.AIR_QUALITY_AI_ADVISORY AS
 SELECT 
     reportingarea,
@@ -64,13 +70,17 @@ SELECT
     categoryname AS category,
     AI_COMPLETE(
         'claude-sonnet-4-5',
-        PROMPT('Generate a public health advisory for this air quality reading:
-Area: {0}
-Pollutant: ' || parametername || '
-AQI Level: ' || aqi || '
-Category: ' || categoryname || '
-
-Include: 1) Health risks 2) Vulnerable populations affected 3) Recommended precautions', reportingarea)
+        CONCAT(
+            'Generate a public health advisory for this air quality reading: Area: ',
+            COALESCE(reportingarea, 'Unknown'),
+            ' Pollutant: ',
+            COALESCE(parametername, 'Unknown'),
+            ' AQI Level: ',
+            COALESCE(CAST(aqi AS VARCHAR), 'N/A'),
+            ' Category: ',
+            COALESCE(categoryname, 'Unknown'),
+            '. Include: 1) Health risks 2) Vulnerable populations affected 3) Recommended precautions. Keep concise.'
+        )
     ) AS health_advisory,
     dateobserved
 FROM DEMO.DEMO.AQ
@@ -197,7 +207,8 @@ AND LENGTH(description) > 200;
 -- ============================================================================
 
 -- Function: Find Similar Transit Alerts Using Vector Search
-CREATE OR REPLACE FUNCTION DEMO.DEMO.FIND_SIMILAR_ALERTS(search_query VARCHAR, result_limit INT DEFAULT 5)
+-- Note: SQL UDFs don't support WITH clauses, so we use subqueries
+CREATE OR REPLACE FUNCTION DEMO.DEMO.FIND_SIMILAR_ALERTS(search_query VARCHAR)
 RETURNS TABLE(
     title VARCHAR,
     description_preview VARCHAR,
@@ -206,29 +217,21 @@ RETURNS TABLE(
 LANGUAGE SQL
 AS
 $$
-    WITH query_embedding AS (
-        SELECT SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', search_query) AS query_vec
-    ),
-    alert_embeddings AS (
-        SELECT 
-            title,
-            LEFT(description, 150) AS description_preview,
-            SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', description) AS embedding
-        FROM DEMO.DEMO.TRANSIT_ALERTS
-        WHERE description IS NOT NULL
-    )
     SELECT 
         a.title,
-        a.description_preview,
-        VECTOR_L2_DISTANCE(a.embedding, q.query_vec) AS similarity_distance
-    FROM alert_embeddings a
-    CROSS JOIN query_embedding q
+        LEFT(a.description, 150) AS description_preview,
+        VECTOR_L2_DISTANCE(
+            SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', a.description),
+            SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', search_query)
+        ) AS similarity_distance
+    FROM DEMO.DEMO.TRANSIT_ALERTS a
+    WHERE a.description IS NOT NULL
     ORDER BY similarity_distance ASC
-    LIMIT result_limit
+    LIMIT 10
 $$;
 
 -- Function: Find Similar Weather Conditions
-CREATE OR REPLACE FUNCTION DEMO.DEMO.FIND_SIMILAR_WEATHER(search_condition VARCHAR, result_limit INT DEFAULT 5)
+CREATE OR REPLACE FUNCTION DEMO.DEMO.FIND_SIMILAR_WEATHER(search_condition VARCHAR)
 RETURNS TABLE(
     station_id VARCHAR,
     location VARCHAR,
@@ -239,29 +242,19 @@ RETURNS TABLE(
 LANGUAGE SQL
 AS
 $$
-    WITH query_embedding AS (
-        SELECT SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', search_condition) AS query_vec
-    ),
-    weather_embeddings AS (
-        SELECT 
-            station_id,
-            location,
-            weather,
-            temp_f,
-            SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', weather || ' ' || COALESCE(location, '')) AS embedding
-        FROM DEMO.DEMO.NOAAWEATHER
-        WHERE weather IS NOT NULL
-    )
     SELECT 
         w.station_id,
         w.location,
         w.weather,
         w.temp_f,
-        VECTOR_L2_DISTANCE(w.embedding, q.query_vec) AS similarity_distance
-    FROM weather_embeddings w
-    CROSS JOIN query_embedding q
+        VECTOR_L2_DISTANCE(
+            SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', w.weather || ' ' || COALESCE(w.location, '')),
+            SNOWFLAKE.CORTEX.EMBED_TEXT_1024('snowflake-arctic-embed-l-v2.0', search_condition)
+        ) AS similarity_distance
+    FROM DEMO.DEMO.NOAAWEATHER w
+    WHERE w.weather IS NOT NULL
     ORDER BY similarity_distance ASC
-    LIMIT result_limit
+    LIMIT 10
 $$;
 
 -- ============================================================================
@@ -310,18 +303,19 @@ $;
 -- This creates the framework for future camera image analysis.
 
 -- View: Camera Locations Prepared for Image Analysis
+-- Using NYC_CAMERA_DATA table (not CAMERAS which doesn't exist)
 CREATE OR REPLACE VIEW DEMO.DEMO.CAMERAS_FOR_IMAGE_ANALYSIS AS
 SELECT 
-    id AS camera_id,
+    camera_id,
     name AS camera_name,
-    roadwayname AS roadway,
-    directionoftravel AS direction,
+    roadway_name AS roadway,
+    direction_of_travel AS direction,
     latitude,
     longitude,
-    videourl AS image_url,
+    image_url,
     ST_MAKEPOINT(longitude, latitude) AS geo_point,
     'Ready for AI image analysis when images are staged' AS analysis_status
-FROM DEMO.DEMO.CAMERAS
+FROM DEMO.DEMO.NYC_CAMERA_DATA
 WHERE latitude IS NOT NULL 
 AND longitude IS NOT NULL;
 
@@ -348,7 +342,8 @@ SELECT
     AI_FILTER(PROMPT('Is this an urgent or emergency alert? Alert: {0}', ta.description)) AS is_urgent,
     -- Summarization
     SNOWFLAKE.CORTEX.SUMMARIZE(ta.description) AS alert_summary,
-    ta.updated_at
+    ta.pubdate,
+    ta.created_at
 FROM DEMO.DEMO.TRANSIT_ALERTS ta
 WHERE ta.description IS NOT NULL;
 
@@ -373,8 +368,8 @@ SELECT title, affected_routes, affected_stations, timing
 FROM DEMO.DEMO.TRANSIT_ALERTS_ENTITIES
 LIMIT 10;
 
--- 5. Find Similar Alerts (Semantic Search)
-SELECT * FROM TABLE(DEMO.DEMO.FIND_SIMILAR_ALERTS('train delays and cancellations', 5));
+-- 5. Find Similar Alerts (Semantic Search) - no result_limit parameter
+SELECT * FROM TABLE(DEMO.DEMO.FIND_SIMILAR_ALERTS('train delays and cancellations'));
 
 -- 6. Classify Alert Severity
 SELECT title, description, DEMO.DEMO.CLASSIFY_ALERT_SEVERITY(description) AS severity

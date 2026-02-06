@@ -118,8 +118,9 @@ def main():
         )
         pg_client.create_table()
     
-    if args.send_images:
+    if args.send_images or slack_client:
         os.makedirs(args.images_dir, exist_ok=True)
+        logger.info(f"Images directory: {args.images_dir}")
     
     logger.info("Initialization complete")
     logger.info(f"Batch interval: {args.interval} seconds")
@@ -141,6 +142,8 @@ def main():
     
     batch_num = 0
     total_records_sent = 0
+    total_online_cameras = 0
+    total_offline_cameras = 0
     
     # Send startup notification to Slack
     if slack_client:
@@ -179,27 +182,61 @@ def main():
                         f"📊 *Batch {batch_num} Complete*\n"
                         f"• Records this batch: `{len(records)}`\n"
                         f"• Total records sent: `{total_records_sent}`\n"
-                        f"• Cameras tracked: `{len(cameras)}`"
+                        f"• Cameras tracked: `{len(cameras)}`\n"
+                        f"• Online cameras sent to Slack: `{total_online_cameras}`\n"
+                        f"• Offline cameras skipped: `{total_offline_cameras}`"
                     )
                     slack_client.send_message(status_msg)
                     logger.info(f"[OK] Sent batch {batch_num} status to Slack")
                 
-                # Send sample camera image on first batch if requested
-                if slack_client and args.send_images and batch_num == 1:
-                    sample_record = records[0]
-                    if sample_record.get('image_url'):
-                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                        image_path = os.path.join(
-                            args.images_dir,
-                            f"cam_{sample_record['camera_id']}_{timestamp}.jpg"
-                        )
-                        downloaded = sensor.download_image(
-                            sample_record['image_url'],
-                            image_path
-                        )
-                        if downloaded:
-                            slack_client.send_camera_alert(sample_record, image_path)
-                            logger.info("[OK] Sent sample camera image to Slack")
+                # Send sample camera images every batch (try up to 5, send 3 online)
+                if slack_client:
+                    import random
+                    # Get cameras with valid image URLs
+                    cameras_with_images = [r for r in records if r.get('image_url')]
+                    # Shuffle to get random selection
+                    random.shuffle(cameras_with_images)
+                    
+                    images_sent = 0
+                    images_target = 3
+                    attempts = 0
+                    max_attempts = min(10, len(cameras_with_images))  # Try up to 10 cameras
+                    
+                    for sample_record in cameras_with_images:
+                        if images_sent >= images_target or attempts >= max_attempts:
+                            break
+                        
+                        attempts += 1
+                        
+                        try:
+                            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                            image_path = os.path.join(
+                                args.images_dir,
+                                f"cam_{sample_record['camera_id']}_{timestamp}.jpg"
+                            )
+                            
+                            # download_image returns None for offline cameras
+                            downloaded = sensor.download_image(
+                                sample_record['image_url'],
+                                image_path
+                            )
+                            
+                            if downloaded:
+                                # Camera is online - send to Slack
+                                slack_client.send_camera_alert(sample_record, image_path)
+                                images_sent += 1
+                                total_online_cameras += 1
+                                logger.info(f"[OK] Sent ONLINE camera {images_sent}/{images_target} to Slack: {sample_record.get('name', 'Unknown')}")
+                            else:
+                                # Camera is offline - skip
+                                total_offline_cameras += 1
+                                logger.info(f"[SKIP] Camera offline: {sample_record.get('name', 'Unknown')}")
+                                
+                        except Exception as e:
+                            logger.warning(f"Failed to process camera image: {e}")
+                    
+                    if images_sent < images_target:
+                        logger.info(f"[INFO] Only {images_sent}/{images_target} online cameras found in sample")
             
             elapsed = time.time() - batch_start
             wait_time = max(0, args.interval - elapsed)
@@ -225,6 +262,8 @@ def main():
                 f"🛑 *NYC Camera Pipeline Stopped*\n"
                 f"• Total batches: `{batch_num}`\n"
                 f"• Total records sent: `{total_records_sent}`\n"
+                f"• Online cameras sent to Slack: `{total_online_cameras}`\n"
+                f"• Offline cameras skipped: `{total_offline_cameras}`\n"
                 f"• Runtime stats logged"
             )
             try:

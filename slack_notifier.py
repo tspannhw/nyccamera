@@ -35,8 +35,9 @@ class SlackNotifier:
                 logger.error(f"Image file not found: {image_path}")
                 return False
             
+            # Use files_upload_v2 with correct parameters
             response = self.client.files_upload_v2(
-                channel=target_channel,
+                channels=[target_channel],  # Must be a list for v2
                 file=image_path,
                 title=title,
                 initial_comment=comment

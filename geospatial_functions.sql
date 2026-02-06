@@ -354,14 +354,14 @@ GRANT USAGE ON PROCEDURE ANALYZE_LOCATION_CONDITIONS(FLOAT, FLOAT, FLOAT) TO ROL
 -- EXAMPLE QUERIES
 -- ============================================================================
 
--- Find nearest weather station to Times Square
--- SELECT * FROM TABLE(GET_NEAREST_WEATHER_STATION(40.7580, -73.9855));
+-- Find nearest weather station to Times Square (cast to FLOAT to avoid type errors)
+-- SELECT * FROM TABLE(GET_NEAREST_WEATHER_STATION(40.7580::FLOAT, -73.9855::FLOAT));
 
 -- Find all weather stations within 25 miles of JFK Airport  
--- SELECT * FROM TABLE(GET_WEATHER_STATIONS_WITHIN_RADIUS(40.6413, -73.7781, 25));
+-- SELECT * FROM TABLE(GET_WEATHER_STATIONS_WITHIN_RADIUS(40.6413::FLOAT, -73.7781::FLOAT, 25::FLOAT));
 
 -- Get full environmental conditions at Central Park
--- SELECT * FROM TABLE(GET_ENVIRONMENTAL_CONDITIONS_AT_LOCATION(40.7829, -73.9654, 50));
+-- SELECT * FROM TABLE(GET_ENVIRONMENTAL_CONDITIONS_AT_LOCATION(40.7829::FLOAT, -73.9654::FLOAT, 50::FLOAT));
 
 -- Call the stored procedure for JSON report
 -- CALL ANALYZE_LOCATION_CONDITIONS(40.7128, -74.0060, 50);
